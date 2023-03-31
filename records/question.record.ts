@@ -1,4 +1,4 @@
-import {NewQuestionEntity, QuestionEntity} from "../types";
+import {NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types";
 import {ValidationError} from "../utils/errors";
 import {pool} from "../utils/db";
 import {FieldPacket} from "mysql2";
@@ -28,5 +28,16 @@ export class QuestionRecord implements QuestionEntity {
             id,
         }) as QuestionRecordResults;
         return results.length === 0 ? null : new QuestionRecord(results[0]);
+    }
+
+    static async findAll(name: string): Promise<SimpleQuestionEntity[]> {
+        const [results] = await pool.execute("SELECT * FROM `questions` WHERE `name` LIKE :search", {
+            search: `%${name}%`,
+        }) as QuestionRecordResults;
+
+        return results.map(result => {
+            const {id, name} = result;
+            return {id, name};
+        });
     }
 }
