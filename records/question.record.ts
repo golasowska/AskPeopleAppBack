@@ -2,6 +2,7 @@ import {NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types"
 import {ValidationError} from "../utils/errors";
 import {pool} from "../utils/db";
 import {FieldPacket} from "mysql2";
+import {v4 as uuid} from "uuid";
 
 type QuestionRecordResults = [QuestionEntity[], FieldPacket[]];
 
@@ -39,5 +40,14 @@ export class QuestionRecord implements QuestionEntity {
             const {id, name} = result;
             return {id, name};
         });
+    }
+
+    async insert(): Promise<void> {
+        if (!this.id) {
+            this.id = uuid();
+        } else {
+            throw new Error('Cannot insert something that is already inserted!');
+        }
+        await pool.execute("INSERT INTO `questions`(`id`, `name`, `type`) VALUES(:id, :name, :type )", this);
     }
 }
