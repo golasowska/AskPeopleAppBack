@@ -4,7 +4,7 @@ import "express-async-errors";
 import {config} from "./config/config";
 import {handleError, ValidationError} from "./utils/errors";
 import rateLimit from 'express-rate-limit';
-// import {adRouter} from "./routers/ad.router";
+import {questionRouter} from "./routers/question.router";
 
 const app = express();
 
@@ -18,15 +18,7 @@ app.use(rateLimit({
     max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 }));
 
-// const router = Router();
-
-// router.use('/ad', adRouter);
-
-// app.use('/api', router);
-
-// app.get('/', async (req, res) => {
-//     throw new ValidationError('Dammmn');
-// });
+app.use('/questions', questionRouter);
 
 app.use(handleError);
 

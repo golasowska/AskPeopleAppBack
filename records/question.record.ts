@@ -15,7 +15,7 @@ export class QuestionRecord implements QuestionEntity {
         if (!obj.name || obj.name.length > 100) {
             throw new ValidationError('The question cannot be empty or longer than 100 characters!');
         }
-        if (obj.type === 'open' || obj.type === 'radio' || obj.type === 'checkbox') {
+        if (!(obj.type === 'open' || obj.type === 'radio' || obj.type === 'checkbox')) {
             throw new ValidationError('Question type must be one of the given options!');
         }
 
@@ -31,11 +31,19 @@ export class QuestionRecord implements QuestionEntity {
         return results.length === 0 ? null : new QuestionRecord(results[0]);
     }
 
-    static async findAll(name: string): Promise<SimpleQuestionEntity[]> {
-        const [results] = await pool.execute("SELECT * FROM `questions` WHERE `name` LIKE :search", {
-            search: `%${name}%`,
-        }) as QuestionRecordResults;
+    // static async findAll(name: string): Promise<SimpleQuestionEntity[]> {
+    //     const [results] = await pool.execute("SELECT * FROM `questions` WHERE `name` LIKE :search", {
+    //         search: `%${name}%`,
+    //     }) as QuestionRecordResults;
+    //
+    //     return results.map(result => {
+    //         const {id, name} = result;
+    //         return {id, name};
+    //     });
+    // }
 
+    static async getAll(): Promise<SimpleQuestionEntity[]> {
+        const [results] = await pool.execute("SELECT * FROM `questions`") as QuestionRecordResults;
         return results.map(result => {
             const {id, name} = result;
             return {id, name};
