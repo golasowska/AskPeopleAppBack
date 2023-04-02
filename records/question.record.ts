@@ -1,4 +1,4 @@
-import {NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types";
+import {AnswerEntity, NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types";
 import {ValidationError} from "../utils/errors";
 import {pool} from "../utils/db";
 import {FieldPacket} from "mysql2";
@@ -10,6 +10,7 @@ export class QuestionRecord implements QuestionEntity {
     public id: string;
     public name: string;
     public type: "open" | "radio" | "checkbox";
+    public answers: AnswerEntity[];
 
     constructor(obj: NewQuestionEntity) {
         if (!obj.name || obj.name.length > 100) {
@@ -22,6 +23,7 @@ export class QuestionRecord implements QuestionEntity {
         this.id = obj.id;
         this.name = obj.name;
         this.type = obj.type;
+        this.answers = obj.answers;
     }
 
     static async getOne(id: string): Promise<QuestionRecord | null> {
@@ -51,11 +53,17 @@ export class QuestionRecord implements QuestionEntity {
     }
 
     async insert(): Promise<void> {
+        const ans = this.answers ? this.answers.map(a => ({id: uuid(), text: a.text, votes: 0})) : null;
         if (!this.id) {
             this.id = uuid();
         } else {
             throw new Error('Cannot insert something that is already inserted!');
         }
-        await pool.execute("INSERT INTO `questions`(`id`, `name`, `type`) VALUES(:id, :name, :type )", this);
+        await pool.execute("INSERT INTO `questions`(`id`, `name`, `type`, `answers`) VALUES(:id, :name, :type, :answers )", {
+            id: this.id,
+            name: this.name,
+            type: this.type,
+            answers: ans,
+        });
     }
 }

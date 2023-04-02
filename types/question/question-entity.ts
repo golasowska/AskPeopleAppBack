@@ -1,5 +1,10 @@
-export interface NewQuestionEntity extends Omit<QuestionEntity, 'id'> {
+import {AnswerEntity} from "../answer";
+
+export interface NewQuestionEntity {
     id?: string;
+    name: string;
+    type: 'open' | 'radio' | 'checkbox';
+    answers: AnswerEntity[] | null;
 }
 
 export interface SimpleQuestionEntity {
@@ -7,6 +12,7 @@ export interface SimpleQuestionEntity {
     name: string;
 }
 
-export interface QuestionEntity extends SimpleQuestionEntity{
+export interface QuestionEntity extends SimpleQuestionEntity {
     type: 'open' | 'radio' | 'checkbox';
+    answers: AnswerEntity[] | null;
 }
