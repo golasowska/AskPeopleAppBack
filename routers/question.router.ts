@@ -1,5 +1,7 @@
 import {Router} from "express";
 import {QuestionRecord} from "../records/question.record";
+import {ValidationError} from "../utils/errors";
+import {AnswerChange} from "../types";
 
 export const questionRouter = Router()
     // .get('/search/:name?', async (req, res) => {
@@ -18,4 +20,15 @@ export const questionRouter = Router()
         const question = new QuestionRecord(req.body);
         await question.insert();
         res.json(question);
+    })
+    .patch('/:id', async (req, res) => {
+        const {body} : {body: AnswerChange} = req;
+        const question = await QuestionRecord.getOne(req.params.id);
+        //
+        if (question === null) {
+            throw new ValidationError('Could not find the question.');
+        }
+        await question.update(body.answerBody);
+        const updatedQuestion = await QuestionRecord.getOne(req.params.id);
+        res.json(updatedQuestion);
     });

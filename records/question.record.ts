@@ -1,4 +1,4 @@
-import {AnswerEntity, NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types";
+import {AnswerEntity, AnswerOpenEntity, NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types";
 import {ValidationError} from "../utils/errors";
 import {pool} from "../utils/db";
 import {FieldPacket} from "mysql2";
@@ -10,7 +10,7 @@ export class QuestionRecord implements QuestionEntity {
     public id: string;
     public name: string;
     public type: "open" | "radio" | "checkbox";
-    public answers: AnswerEntity[];
+    public answers: AnswerEntity[] | null;
 
     constructor(obj: NewQuestionEntity) {
         if (!obj.name || obj.name.length > 100) {
@@ -63,6 +63,23 @@ export class QuestionRecord implements QuestionEntity {
             id: this.id,
             name: this.name,
             type: this.type,
+            answers: ans,
+        });
+    }
+
+    async update(answerBody: string[]): Promise<void> {
+        let ans: AnswerEntity[] | AnswerOpenEntity[] | null;
+        if(this.type === "open") {
+            if(this.answers === null) {
+                ans = [{"id": uuid(), "text": answerBody[0]}];
+            } else {
+                ans = [...this.answers, {"id": uuid(), "text": answerBody[0]}];
+            }
+        } else {
+            ans = this.answers.map(a =>  ( answerBody.indexOf(a.id) > -1 ? {...a, votes: a.votes + 1} : a) )
+        }
+        await pool.execute("UPDATE `questions` SET `answers` = :answers WHERE `id` = :id", {
+            id: this.id,
             answers: ans,
         });
     }
