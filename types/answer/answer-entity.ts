@@ -15,12 +15,6 @@ export interface AnswerOpenEntity  {
     text: string;
 }
 
-export interface AnswerEntityInForm {
-    id: number;
-    text: string;
-    added: boolean;
-}
-
 export interface AnswerChange {
     answerBody: string[];
 }
