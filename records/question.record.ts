@@ -1,4 +1,4 @@
-import {AnswerEntity, AnswerOpenEntity, NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types";
+import {AnswerEntity, NewQuestionEntity, QuestionEntity, SimpleQuestionEntity} from "../types";
 import {ValidationError} from "../utils/errors";
 import {pool} from "../utils/db";
 import {FieldPacket} from "mysql2";
@@ -68,7 +68,7 @@ export class QuestionRecord implements QuestionEntity {
     }
 
     async update(answerBody: string[]): Promise<void> {
-        let ans: AnswerEntity[] | AnswerOpenEntity[] | null;
+        let ans: AnswerEntity[] | null;
         if(this.type === "open") {
             if(this.answers === null) {
                 ans = [{"id": uuid(), "text": answerBody[0]}];

@@ -1,7 +1,7 @@
 import {Router} from "express";
 import {QuestionRecord} from "../records/question.record";
 import {ValidationError} from "../utils/errors";
-import {AnswerChange} from "../types";
+import {AnswerChange, NewQuestionEntity} from "../types";
 
 export const questionRouter = Router()
     // .get('/search/:name?', async (req, res) => {
@@ -17,14 +17,13 @@ export const questionRouter = Router()
         res.json(question);
     })
     .post('/', async (req, res) => {
-        const question = new QuestionRecord(req.body);
+        const question = new QuestionRecord(req.body as NewQuestionEntity);
         await question.insert();
         res.json(question);
     })
     .patch('/:id', async (req, res) => {
         const {body}: { body: AnswerChange } = req;
         const question = await QuestionRecord.getOne(req.params.id);
-        //
         if (question === null) {
             throw new ValidationError('Could not find the question.');
         }
