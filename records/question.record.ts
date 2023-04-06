@@ -47,8 +47,8 @@ export class QuestionRecord implements QuestionEntity {
     static async getAll(): Promise<SimpleQuestionEntity[]> {
         const [results] = await pool.execute("SELECT * FROM `questions`") as QuestionRecordResults;
         return results.map(result => {
-            const {id, name} = result;
-            return {id, name};
+            const {id, name, type} = result;
+            return {id, name, type};
         });
     }
 

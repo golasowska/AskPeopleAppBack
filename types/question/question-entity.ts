@@ -17,9 +17,9 @@ export interface NewQuestionEntityInForm {
 export interface SimpleQuestionEntity {
     id: string;
     name: string;
+    type: 'open' | 'radio' | 'checkbox';
 }
 
 export interface QuestionEntity extends SimpleQuestionEntity {
-    type: 'open' | 'radio' | 'checkbox';
     answers: AnswerEntity[] | null;
 }
