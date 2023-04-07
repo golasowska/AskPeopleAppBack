@@ -10,7 +10,8 @@ export const questionRouter = Router()
     })
     .get('/:id', async (req, res) => {
         const question = await QuestionRecord.getOne(req.params.id);
-        res.json(question);
+        const answers = question.answers && typeof question.answers === 'string' ? JSON.parse(question.answers): null;
+        res.json({...question, answers});
     })
     .post('/', async (req, res) => {
         const question = new QuestionRecord(req.body as NewQuestionEntity);
@@ -28,5 +29,6 @@ export const questionRouter = Router()
         }
         await question.update(body.answerBody);
         const updatedQuestion = await QuestionRecord.getOne(req.params.id);
-        res.json(updatedQuestion);
+        const answers = updatedQuestion.answers && typeof updatedQuestion.answers === 'string' ? JSON.parse(updatedQuestion.answers): null;
+        res.json({...updatedQuestion, answers});
     });

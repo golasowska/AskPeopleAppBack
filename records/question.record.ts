@@ -33,17 +33,6 @@ export class QuestionRecord implements QuestionEntity {
         return results.length === 0 ? null : new QuestionRecord(results[0]);
     }
 
-    // static async findAll(name: string): Promise<SimpleQuestionEntity[]> {
-    //     const [results] = await pool.execute("SELECT * FROM `questions` WHERE `name` LIKE :search", {
-    //         search: `%${name}%`,
-    //     }) as QuestionRecordResults;
-    //
-    //     return results.map(result => {
-    //         const {id, name} = result;
-    //         return {id, name};
-    //     });
-    // }
-
     static async getAll(): Promise<SimpleQuestionEntity[]> {
         const [results] = await pool.execute("SELECT * FROM `questions`") as QuestionRecordResults;
         return results.map(result => {
@@ -53,7 +42,7 @@ export class QuestionRecord implements QuestionEntity {
     }
 
     async insert(): Promise<void> {
-        const ans = this.answers ? this.answers.map(a => ({id: uuid(), text: a.text, votes: 0})) : null;
+        const ans = this.answers ? JSON.stringify(this.answers.map(a => ({id: uuid(), text: a.text, votes: 0}))) : null;
         if (!this.id) {
             this.id = uuid();
         } else {
@@ -69,18 +58,20 @@ export class QuestionRecord implements QuestionEntity {
 
     async update(answerBody: string[]): Promise<void> {
         let ans: AnswerEntity[] | null;
+        const answers = typeof this.answers === 'string' ? JSON.parse(this.answers) : this.answers;
         if(this.type === "open") {
             if(this.answers === null) {
                 ans = [{"id": uuid(), "text": answerBody[0]}];
             } else {
-                ans = [...this.answers, {"id": uuid(), "text": answerBody[0]}];
+                ans = [...answers, {"id": uuid(), "text": answerBody[0]}];
             }
         } else {
-            ans = this.answers.map(a =>  ( answerBody.indexOf(a.id) > -1 ? {...a, votes: a.votes + 1} : a) )
+            ans = answers.map((a:AnswerEntity) =>  ( answerBody.indexOf(a.id) > -1 ? {...a, votes: a.votes + 1} : a) )
         }
+        console.log(ans);
         await pool.execute("UPDATE `questions` SET `answers` = :answers WHERE `id` = :id", {
             id: this.id,
-            answers: ans,
+            answers: JSON.stringify(ans),
         });
     }
 }
