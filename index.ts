@@ -2,7 +2,7 @@ import express, {json, Router} from "express";
 import cors from 'cors';
 import "express-async-errors";
 import {config} from "./config/config";
-import {handleError, ValidationError} from "./utils/errors";
+import {handleError} from "./utils/errors";
 import rateLimit from 'express-rate-limit';
 import {questionRouter} from "./routers/question.router";
 

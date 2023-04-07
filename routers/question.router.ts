@@ -4,10 +4,6 @@ import {ValidationError} from "../utils/errors";
 import {AnswerChange, NewQuestionEntity} from "../types";
 
 export const questionRouter = Router()
-    // .get('/search/:name?', async (req, res) => {
-    //     const questions = await QuestionRecord.getAll(req.params.name ?? '');
-    //     res.json(questions);
-    // })
     .get('/', async (req, res) => {
         const questions = await QuestionRecord.getAll();
         res.json(questions);
