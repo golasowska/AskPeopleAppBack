@@ -8,5 +8,4 @@ export const pool = createPool({
     database: config.dbDatabase,
     namedPlaceholders: true,
     decimalNumbers: true,
-    socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock',  // - works locally
 });
