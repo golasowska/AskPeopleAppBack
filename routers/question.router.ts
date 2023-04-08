@@ -10,8 +10,12 @@ export const questionRouter = Router()
     })
     .get('/:id', async (req, res) => {
         const question = await QuestionRecord.getOne(req.params.id);
-        const answers = question.answers && typeof question.answers === 'string' ? JSON.parse(question.answers): null;
-        res.json({...question, answers});
+        if (question === null) {
+            res.json(question);
+        } else {
+            const answers = question.answers && typeof question.answers === 'string' ? JSON.parse(question.answers): null;
+            res.json({...question, answers});
+        }
     })
     .post('/', async (req, res) => {
         const question = new QuestionRecord(req.body as NewQuestionEntity);
